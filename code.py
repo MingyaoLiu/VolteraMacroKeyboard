@@ -14,6 +14,8 @@ cc = ConsumerControl(usb_hid.devices)
 
 encoder = rotaryio.IncrementalEncoder(board.D10, board.D9)
 last_position = encoder.position
+encoder_switch_pin = digitalio.DigitalInOut(board.D7)
+encoder_switch_pin.pull = digitalio.Pull.UP
 
 pixel_pin = board.D2
 LED_index = [3, 1, 0, 2] # Up Down Left Right
@@ -37,8 +39,8 @@ for key in KeySwitchPins:
     KeySwitchIOs.append(thisSwitch)
 
 while True:
-    time.sleep(0.1)
-    
+    time.sleep(0.01)
+
     for i in range(len(KeySwitchIOs)):
         if KeySwitchIOs[i].value is False:
             pixels[LED_index[i]] = BLUE
@@ -46,6 +48,9 @@ while True:
         else:
             pixels[LED_index[i]] = BLACK
 
+    if encoder_switch_pin.value is False:
+        cc.send(ConsumerControlCode.MUTE)
+        time.sleep(0.4)
 
     current_position = encoder.position
     position_change = current_position - last_position
