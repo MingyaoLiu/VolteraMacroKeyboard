@@ -35,14 +35,6 @@ def rainbow_cycle(led_loop_pos):
     pixels.show()
 
 
-BLACK = (0,0,0)
-RED = (255, 0, 0)
-YELLOW = (255, 150, 0)
-GREEN = (0, 255, 0)
-CYAN = (0, 255, 255)
-BLUE = (0, 0, 255)
-PURPLE = (180, 0, 255)
-
 last_key_press_time = [time.monotonic(),time.monotonic(),time.monotonic(),time.monotonic()]
 keySwitchLEDTimeout = [0,0,0,0]
 KeySwitchPins = [board.D8, board.D3, board.D1, board.D4] # Up Down Left Right 
@@ -62,19 +54,14 @@ while True:
     current_led_color_pos = (current_led_color_pos + 1) % math.floor(256 / rainbow_cycle_speed)
     
     for index in range(0,3):
-        if (current_time - last_key_press_time[index]) >= 0.2:
+        if (current_time - last_key_press_time[index]) > 0.2:
             last_key_press_time[index] = current_time
             if KeySwitchIOs[index].value is False:
+                pixels[LED_index[index]] = (255,255,255)
+                pixels.show()
                 kbd.press(keySwitchKeyCode[index])
                 kbd.release_all()
     
-    ## for i in range(len(KeySwitchIOs)):
-        ## if KeySwitchIOs[i].value is False:
-            ## pixels[LED_index[i]] = BLUE
-            ## pixels.show()
-        ## else:
-            ## pixels[LED_index[i]] = BLACK
-
     current_position = encoder.position
     position_change = current_position - last_position
     if position_change > 0:
